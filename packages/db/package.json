@@ -36,7 +36,10 @@
     "db:indexes:analyze": "tsx src/maintenance/search-indexes.ts analyze",
     "db:indexes:optimize": "tsx src/maintenance/search-indexes.ts optimize",
     "db:indexes:rebuild": "tsx src/maintenance/search-indexes.ts rebuild",
-    "db:indexes:stats": "tsx src/maintenance/search-indexes.ts stats"
+    "db:indexes:stats": "tsx src/maintenance/search-indexes.ts stats",
+    "db:benchmark": "tsx src/benchmark/search-performance.ts benchmark",
+    "db:benchmark:indexes": "tsx src/benchmark/search-performance.ts indexes",
+    "db:benchmark:plan": "tsx src/benchmark/search-performance.ts plan"
   },
   "dependencies": {
     "@repo/types": "workspace:*",

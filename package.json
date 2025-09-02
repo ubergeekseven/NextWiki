@@ -26,6 +26,8 @@
     "db:indexes:optimize": "pnpm run -F @repo/db db:indexes:optimize",
     "db:indexes:rebuild": "pnpm run -F @repo/db db:indexes:rebuild",
     "db:indexes:stats": "pnpm run -F @repo/db db:indexes:stats",
+    "db:benchmark": "pnpm run -F @repo/db db:benchmark",
+    "db:benchmark:indexes": "pnpm run -F @repo/db db:benchmark:indexes",
     "clean": "turbo run clean",
     "fullclean": "turbo run fullclean && rm -rf node_modules .turbo && rm -f pnpm-lock.yaml"
   },

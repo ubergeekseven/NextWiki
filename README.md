@@ -105,6 +105,7 @@ NextWiki includes a powerful search system with several capabilities:
 - **Full-text search**: Using PostgreSQL's tsvector/tsquery for efficient text search
 - **Fuzzy matching**: Find content even when search terms have typos
 - **Highlighted results**: Search results and matched terms are highlighted
+- **Optimized indexes**: GIN trigram and tsvector indexes for maximum performance
 - **Multi-layer approach**:
   1. Exact vector matching (highest relevance)
   2. Title matching (high relevance)
@@ -112,6 +113,23 @@ NextWiki includes a powerful search system with several capabilities:
   4. Similarity matching for typos (lower relevance)
 
 When a user clicks a search result, they'll be taken directly to the page with all instances of the search term highlighted, and the view will automatically scroll to the first match.
+
+### Search Index Optimization
+
+NextWiki includes advanced database indexing tools for optimal search performance:
+
+```bash
+# Analyze current search index performance
+pnpm db:indexes:analyze
+
+# Apply search index optimizations
+pnpm db:indexes:optimize
+
+# Rebuild indexes when needed
+pnpm db:indexes:rebuild
+```
+
+For detailed information, see [Search Index Documentation](docs/search-indexing.md).
 
 ## Project Structure
 
