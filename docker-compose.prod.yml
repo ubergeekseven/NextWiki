@@ -1,0 +1,57 @@
+# Production Docker Compose Override
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+services:
+  nextwiki:
+    environment:
+      # Production-specific environment variables
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1
+    # Remove port mapping in production - use reverse proxy
+    # ports: []
+    
+  postgres:
+    # Production PostgreSQL configuration
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c pg_stat_statements.track=all
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.7
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+    # Production backup configuration
+    volumes:
+      - ${DATA_PATH:-./data}/postgres:/var/lib/postgresql/data
+      - ${DATA_PATH:-./data}/postgres-config:/etc/postgresql
+      - ${DATA_PATH:-./data}/backups:/backups
+      # Add backup scripts
+      - ./scripts/backup:/scripts/backup:ro
+    
+  # Optional: Backup service for automated backups
+  backup:
+    image: postgres:17
+    container_name: nextwiki-backup
+    restart: "no"  # Only run when needed
+    environment:
+      PGUSER: ${DB_USER:-nextwiki}
+      PGPASSWORD: ${DB_PASSWORD:-nextwiki_password}
+      PGDATABASE: ${DB_NAME:-nextwiki}
+      PGHOST: postgres
+    volumes:
+      - ${DATA_PATH:-./data}/backups:/backups
+    networks:
+      - nextwiki-network
+    profiles:
+      - backup
+    command: >
+      sh -c "
+      pg_dump -h postgres -U $$PGUSER -d $$PGDATABASE | gzip > /backups/nextwiki-backup-$$(date +%Y%m%d_%H%M%S).sql.gz &&
+      find /backups -name '*.sql.gz' -mtime +30 -delete
+      "
+    depends_on:
+      postgres:
+        condition: service_healthy

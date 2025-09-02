@@ -1,0 +1,53 @@
+# NextWiki Backend Docker Image
+# NestJS backend for WebSocket support
+
+# Stage 1: Base with Node.js and pnpm
+FROM node:18-alpine AS base
+RUN npm install -g pnpm
+WORKDIR /app
+
+# Stage 2: Install dependencies
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/*/package.json ./packages/*/
+COPY apps/backend/package.json ./apps/backend/
+COPY apps/web/package.json ./apps/web/
+RUN pnpm install --frozen-lockfile
+
+# Stage 3: Build the application
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Build the backend application
+RUN pnpm run build --filter=backend
+
+# Stage 4: Production runtime
+FROM node:18-alpine AS runner
+WORKDIR /app
+
+# Add non-root user for security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nestjs
+
+# Copy built application and dependencies
+COPY --from=builder /app/apps/backend/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/backend/package.json ./
+
+# Set proper permissions
+USER nestjs
+
+# Expose the port
+EXPOSE 3001
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3001/health || exit 1
+
+# Start the application
+CMD ["node", "dist/main.js"]
