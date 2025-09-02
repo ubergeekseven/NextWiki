@@ -98,6 +98,57 @@ An open-source wiki system built with modern web technologies, inspired by WikiJ
 
 6. Open [http://localhost:3000](http://localhost:3000) in your browser to see the wiki.
 
+## 🐳 Docker Deployment
+
+NextWiki can be easily deployed using Docker with external volumes for data persistence and easy backup/transport.
+
+### Quick Start with Docker
+
+1. **Clone and setup:**
+   ```bash
+   git clone https://github.com/ubergeekseven/NextWiki.git
+   cd NextWiki
+   make setup  # Creates .env from template
+   ```
+
+2. **Configure environment:**
+   ```bash
+   # Edit .env with your settings (database passwords, OAuth, etc.)
+   # Generate NEXTAUTH_SECRET with: openssl rand -base64 32
+   ```
+
+3. **Start NextWiki:**
+   ```bash
+   make up        # Web app only
+   make up-full   # With WebSocket backend
+   ```
+
+4. **Access NextWiki:**
+   - Web app: http://localhost:3000
+   - Backend (if enabled): http://localhost:3001
+
+### Features
+
+- **External volumes**: All data stored in configurable `./data` directory
+- **Easy backup**: `make backup` and `make restore BACKUP_FILE=filename`
+- **Production ready**: Optimized multi-stage builds
+- **Optional backend**: Enable WebSocket support when needed
+- **Health checks**: Built-in container health monitoring
+
+### Data Management
+
+All persistent data is stored externally in the `DATA_PATH` directory:
+- PostgreSQL database files
+- Application data and uploads
+- Automated backups with rotation
+
+You can easily backup the entire installation:
+```bash
+tar czf nextwiki-backup.tar.gz ./data
+```
+
+For detailed Docker deployment instructions, see [DOCKER.md](./DOCKER.md).
+
 ## Search Features
 
 NextWiki includes a powerful search system with several capabilities:

@@ -1,0 +1,26 @@
+# Development Docker Compose Override
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  nextwiki:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: deps  # Stop at deps stage for development
+    volumes:
+      # Mount source code for hot reloading
+      - .:/app
+      - /app/node_modules
+      - /app/apps/web/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_DEV_MODE=true
+    command: pnpm run dev:web
+    
+  postgres:
+    # Development PostgreSQL with more verbose logging
+    command: >
+      postgres
+      -c log_statement=all
+      -c log_destination=stderr
+      -c logging_collector=off
