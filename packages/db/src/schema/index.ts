@@ -352,10 +352,14 @@ export const wikiPages = pgTable(
       ),
   },
   (t) => [
-    // Vector search index for tsvector column
+    // Vector search index for tsvector column - GIN index for full-text search
     index("idx_search").using("gin", t.search),
-    // Title trigram index
-    index("trgm_idx_title").on(t.title),
+    // Btree index on title for exact matches and prefix searches  
+    index("idx_title_btree").on(t.title),
+    // Btree index on path for fast page lookups
+    index("idx_path_btree").on(t.path),
+    // Composite index for common query patterns (published pages by update time)
+    index("idx_published_updated").on(t.isPublished, t.updatedAt),
   ]
 );
 

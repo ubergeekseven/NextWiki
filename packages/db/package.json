@@ -32,7 +32,14 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx src/seeds/run.ts",
     "_db:seed:permissions": "tsx src/seeds/permissions.ts",
-    "_db:seed:custom": "tsx src/seeds/custom-seeds.ts"
+    "_db:seed:custom": "tsx src/seeds/custom-seeds.ts",
+    "db:indexes:analyze": "tsx src/maintenance/search-indexes.ts analyze",
+    "db:indexes:optimize": "tsx src/maintenance/search-indexes.ts optimize",
+    "db:indexes:rebuild": "tsx src/maintenance/search-indexes.ts rebuild",
+    "db:indexes:stats": "tsx src/maintenance/search-indexes.ts stats",
+    "db:benchmark": "tsx src/benchmark/search-performance.ts benchmark",
+    "db:benchmark:indexes": "tsx src/benchmark/search-performance.ts indexes",
+    "db:benchmark:plan": "tsx src/benchmark/search-performance.ts plan"
   },
   "dependencies": {
     "@repo/types": "workspace:*",
